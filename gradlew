@@ -41,9 +41,6 @@ done
 APP_BASE_NAME=`basename "$0"`
 APP_HOME=`dirname "$app_path"`
 
-# Reset position arguments in case they are used
-set --
-
 # Locate java installation
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then

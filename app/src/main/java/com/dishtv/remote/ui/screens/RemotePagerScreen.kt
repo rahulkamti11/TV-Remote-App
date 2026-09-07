@@ -38,13 +38,11 @@ fun RemotePagerScreen(
 
     var showToast by remember { mutableStateOf(false) }
 
-    // Auto-reset IR LED flash after 200ms
-    LaunchedEffect(isTransmitting) {
-        if (isTransmitting) {
+    // Show transmission feedback toast on button press
+    LaunchedEffect(lastKey, isTransmitting) {
+        if (isTransmitting && lastKey.isNotEmpty()) {
             showToast = true
-            delay(200)
-            irManager.stopTransmittingIndicator()
-            delay(1000)
+            delay(1200)
             showToast = false
         }
     }

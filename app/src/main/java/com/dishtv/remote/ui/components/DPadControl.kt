@@ -24,6 +24,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -185,6 +188,7 @@ fun DPadControl(
         Box(
             modifier = Modifier
                 .size(size * 0.33f)
+                .semantics { role = Role.Button }
                 .scale(okScale)
                 .shadow(6.dp, okShape)
                 .clip(okShape)
@@ -232,6 +236,7 @@ private fun SharpDpadSegment(
 
     Box(
         modifier = modifier
+            .semantics { role = Role.Button }
             .scale(scale)
             .shadow(5.dp, shape)
             .clip(shape)

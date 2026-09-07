@@ -25,22 +25,22 @@ object DishTvCodes {
     const val BACK = 0x10AF6897L
     const val HOME = 0x10AF7887L
 
-    // Number Pad (0-9)
-    const val NUM_1 = 0x10AF8877L
-    const val NUM_2 = 0x10AF48B7L
+    // Number Pad (0-9) - Unique NEC codes
+    const val NUM_0 = 0x10AF08F7L
+    const val NUM_1 = 0x10AF827DL
+    const val NUM_2 = 0x10AF42BDL
     const val NUM_3 = 0x10AFC837L
     const val NUM_4 = 0x10AF28D7L
-    const val NUM_5 = 0x10AFA857L
-    const val NUM_6 = 0x10AF6897L
-    const val NUM_7 = 0x10AFE817L
-    const val NUM_8 = 0x10AF18E7L
+    const val NUM_5 = 0x10AF52ADL
+    const val NUM_6 = 0x10AF6A95L
+    const val NUM_7 = 0x10AFEA15L
+    const val NUM_8 = 0x10AF1AE5L
     const val NUM_9 = 0x10AF9867L
-    const val NUM_0 = 0x10AF08F7L
 
     // Screen 2: More Controls
     const val SOURCE = 0x10AF708FL
     const val TV_RADIO = 0x10AFA25DL
-    const val GUIDE = 0x10AF7887L
+    const val GUIDE = 0x10AFB24DL
     const val LANG = 0x10AFD02FL
 
     const val MY_AC = 0x10AF20DFL

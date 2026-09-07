@@ -7,22 +7,33 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class IrManager(private val context: Context) {
+class IrManager(context: Context) {
+    private val appContext = context.applicationContext
 
     private val irManager: ConsumerIrManager? =
-        context.getSystemService(Context.CONSUMER_IR_SERVICE) as? ConsumerIrManager
+        appContext.getSystemService(Context.CONSUMER_IR_SERVICE) as? ConsumerIrManager
 
     private val vibrator: Vibrator? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        val vibratorManager = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+        val vibratorManager = appContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
         vibratorManager?.defaultVibrator
     } else {
         @Suppress("DEPRECATION")
-        context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        appContext.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
+
+    private val irScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+    val hasIr: Boolean = hasIrEmitter()
 
     private val _isTransmitting = MutableStateFlow(false)
     val isTransmitting: StateFlow<Boolean> = _isTransmitting.asStateFlow()
@@ -38,30 +49,40 @@ class IrManager(private val context: Context) {
     }
 
     /**
-     * Transmits a command code using NEC 38kHz protocol, triggers haptics, and updates UI state.
+     * Transmits a command code using NEC 38kHz protocol on a background IO thread,
+     * triggers haptics, and manages transmission state.
      */
     fun transmit(keyName: String, hexCode: Long) {
-        // Trigger haptic vibration
+        // Immediate haptic feedback
         vibrate()
 
         _lastTransmittedKey.value = keyName
         _isTransmitting.value = true
 
-        try {
-            val pattern = NecEncoder.encode(hexCode)
-            if (hasIrEmitter()) {
-                irManager?.transmit(NecEncoder.CARRIER_FREQUENCY, pattern)
-                Log.d("IrManager", "Transmitted $keyName: 0x${hexCode.toString(16).uppercase()}")
-            } else {
-                Log.d("IrManager", "Simulated (No IR Hardware) $keyName: 0x${hexCode.toString(16).uppercase()}")
+        irScope.launch {
+            try {
+                val pattern = NecEncoder.encode(hexCode)
+                if (hasIrEmitter()) {
+                    irManager?.transmit(NecEncoder.CARRIER_FREQUENCY, pattern)
+                    Log.d("IrManager", "Transmitted $keyName: 0x${hexCode.toString(16).uppercase()}")
+                } else {
+                    Log.d("IrManager", "Simulated (No IR Hardware) $keyName: 0x${hexCode.toString(16).uppercase()}")
+                }
+            } catch (e: Exception) {
+                Log.e("IrManager", "Error transmitting IR code: ${e.message}", e)
+            } finally {
+                delay(200)
+                _isTransmitting.value = false
             }
-        } catch (e: Exception) {
-            Log.e("IrManager", "Error transmitting IR code: ${e.message}", e)
         }
     }
 
     fun stopTransmittingIndicator() {
         _isTransmitting.value = false
+    }
+
+    fun release() {
+        irScope.cancel()
     }
 
     private fun vibrate() {

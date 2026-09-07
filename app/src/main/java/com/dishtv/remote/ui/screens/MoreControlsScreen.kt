@@ -15,9 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dishtv.remote.R
 import com.dishtv.remote.data.DishTvCodes
 import com.dishtv.remote.ir.IrManager
 import com.dishtv.remote.ui.components.TactileButton
@@ -217,7 +219,7 @@ fun MoreControlsScreen(
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = "Point your phone's IR blaster towards your set-top box.",
+                text = stringResource(R.string.ir_hint),
                 color = TextSecondary,
                 fontSize = 11.sp,
                 lineHeight = 15.sp

@@ -5,12 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.ArrowLeft
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -19,14 +19,89 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dishtv.remote.ui.theme.*
+
+// Custom Shapes for the 4 Sharp Trapezoid D-Pad Segments
+class UpTrapezoidShape(private val cornerRadius: Float = 16f) : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val path = Path().apply {
+            moveTo(cornerRadius, 0f)
+            lineTo(size.width - cornerRadius, 0f)
+            quadraticBezierTo(size.width, 0f, size.width - 4f, 8f)
+            lineTo(size.width * 0.76f, size.height - 4f)
+            quadraticBezierTo(size.width * 0.73f, size.height, size.width * 0.68f, size.height)
+            lineTo(size.width * 0.32f, size.height)
+            quadraticBezierTo(size.width * 0.27f, size.height, size.width * 0.24f, size.height - 4f)
+            lineTo(4f, 8f)
+            quadraticBezierTo(0f, 0f, cornerRadius, 0f)
+            close()
+        }
+        return Outline.Generic(path)
+    }
+}
+
+class DownTrapezoidShape(private val cornerRadius: Float = 16f) : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val path = Path().apply {
+            moveTo(size.width * 0.32f, 0f)
+            lineTo(size.width * 0.68f, 0f)
+            quadraticBezierTo(size.width * 0.73f, 0f, size.width * 0.76f, 4f)
+            lineTo(size.width - 4f, size.height - 8f)
+            quadraticBezierTo(size.width, size.height, size.width - cornerRadius, size.height)
+            lineTo(cornerRadius, size.height)
+            quadraticBezierTo(0f, size.height, 4f, size.height - 8f)
+            lineTo(size.width * 0.24f, 4f)
+            quadraticBezierTo(size.width * 0.27f, 0f, size.width * 0.32f, 0f)
+            close()
+        }
+        return Outline.Generic(path)
+    }
+}
+
+class LeftTrapezoidShape(private val cornerRadius: Float = 16f) : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val path = Path().apply {
+            moveTo(0f, cornerRadius)
+            lineTo(0f, size.height - cornerRadius)
+            quadraticBezierTo(0f, size.height, 8f, size.height - 4f)
+            lineTo(size.width - 4f, size.height * 0.76f)
+            quadraticBezierTo(size.width, size.height * 0.73f, size.width, size.height * 0.68f)
+            lineTo(size.width, size.height * 0.32f)
+            quadraticBezierTo(size.width, size.height * 0.27f, size.width - 4f, size.height * 0.24f)
+            lineTo(8f, 4f)
+            quadraticBezierTo(0f, 0f, 0f, cornerRadius)
+            close()
+        }
+        return Outline.Generic(path)
+    }
+}
+
+class RightTrapezoidShape(private val cornerRadius: Float = 16f) : Shape {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+        val path = Path().apply {
+            moveTo(0f, size.height * 0.32f)
+            lineTo(0f, size.height * 0.68f)
+            quadraticBezierTo(0f, size.height * 0.73f, 4f, size.height * 0.76f)
+            lineTo(size.width - 8f, size.height - 4f)
+            quadraticBezierTo(size.width, size.height, size.width, size.height - cornerRadius)
+            lineTo(size.width, cornerRadius)
+            quadraticBezierTo(size.width, 0f, size.width - 8f, 4f)
+            lineTo(4f, size.height * 0.24f)
+            quadraticBezierTo(0f, size.height * 0.27f, 0f, size.height * 0.32f)
+            close()
+        }
+        return Outline.Generic(path)
+    }
+}
 
 @Composable
 fun DPadControl(
@@ -36,103 +111,108 @@ fun DPadControl(
     onRight: () -> Unit,
     onOk: () -> Unit,
     modifier: Modifier = Modifier,
-    size: Dp = 190.dp
+    size: Dp = 180.dp
 ) {
     Box(
-        modifier = modifier
-            .size(size)
-            .shadow(10.dp, CircleShape)
-            .clip(CircleShape)
-            .background(
-                brush = Brush.radialGradient(
-                    colors = listOf(
-                        Color(0xFF1E2330),
-                        Color(0xFF13161E)
-                    )
-                )
-            )
-            .border(1.5.dp, Color(0xFF2B3345), CircleShape),
+        modifier = modifier.size(size),
         contentAlignment = Alignment.Center
     ) {
-        // UP Button
-        DPadArrowButton(
+        // UP BUTTON (Top Trapezoid)
+        SharpDpadSegment(
             onClick = onUp,
+            shape = UpTrapezoidShape(),
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 10.dp)
+                .fillMaxWidth(0.92f)
+                .height(size * 0.32f)
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowDropUp,
+                imageVector = Icons.Default.KeyboardArrowUp,
                 contentDescription = "Up",
-                tint = TextPrimary,
-                modifier = Modifier.size(36.dp)
+                tint = TextSecondary,
+                modifier = Modifier
+                    .size(28.dp)
+                    .padding(bottom = 6.dp)
             )
         }
 
-        // DOWN Button
-        DPadArrowButton(
+        // DOWN BUTTON (Bottom Trapezoid)
+        SharpDpadSegment(
             onClick = onDown,
+            shape = DownTrapezoidShape(),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 10.dp)
+                .fillMaxWidth(0.92f)
+                .height(size * 0.32f)
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowDropDown,
+                imageVector = Icons.Default.KeyboardArrowDown,
                 contentDescription = "Down",
-                tint = TextPrimary,
-                modifier = Modifier.size(36.dp)
+                tint = TextSecondary,
+                modifier = Modifier
+                    .size(28.dp)
+                    .padding(top = 6.dp)
             )
         }
 
-        // LEFT Button
-        DPadArrowButton(
+        // LEFT BUTTON (Left Trapezoid)
+        SharpDpadSegment(
             onClick = onLeft,
+            shape = LeftTrapezoidShape(),
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = 10.dp)
+                .fillMaxHeight(0.92f)
+                .width(size * 0.32f)
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowLeft,
+                imageVector = Icons.Default.KeyboardArrowLeft,
                 contentDescription = "Left",
-                tint = TextPrimary,
-                modifier = Modifier.size(36.dp)
+                tint = TextSecondary,
+                modifier = Modifier
+                    .size(28.dp)
+                    .padding(end = 6.dp)
             )
         }
 
-        // RIGHT Button
-        DPadArrowButton(
+        // RIGHT BUTTON (Right Trapezoid)
+        SharpDpadSegment(
             onClick = onRight,
+            shape = RightTrapezoidShape(),
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 10.dp)
+                .fillMaxHeight(0.92f)
+                .width(size * 0.32f)
         ) {
             Icon(
-                imageVector = Icons.Default.ArrowRight,
+                imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = "Right",
-                tint = TextPrimary,
-                modifier = Modifier.size(36.dp)
+                tint = TextSecondary,
+                modifier = Modifier
+                    .size(28.dp)
+                    .padding(start = 6.dp)
             )
         }
 
-        // Center OK Button
+        // CENTER OK BUTTON (Rounded-Square with 10px spacing)
         var isOkPressed by remember { mutableStateOf(false) }
-        val okScale by animateFloatAsState(if (isOkPressed) 0.92f else 1f, label = "ok_scale")
+        val okScale by animateFloatAsState(if (isOkPressed) 0.92f else 1f, label = "ok_press")
+        val okShape = RoundedCornerShape(14.dp)
 
         Box(
             modifier = Modifier
-                .size(70.dp)
+                .size(size * 0.33f)
                 .scale(okScale)
-                .shadow(8.dp, CircleShape)
-                .clip(CircleShape)
+                .shadow(6.dp, okShape)
+                .clip(okShape)
                 .background(
-                    brush = Brush.radialGradient(
+                    brush = Brush.verticalGradient(
                         colors = listOf(
-                            Color(0xFF262C3D),
-                            Color(0xFF161922)
+                            Color(0xFF282F40),
+                            Color(0xFF161A24)
                         )
                     )
                 )
-                .border(1.5.dp, Color(0xFF3B4660), CircleShape)
+                .border(1.4.dp, Color(0xFF38435A), okShape)
                 .pointerInput(Unit) {
                     detectTapGestures(
                         onPress = {
@@ -148,26 +228,38 @@ fun DPadControl(
             Text(
                 text = "OK",
                 color = TextPrimary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 0.5.sp
             )
         }
     }
 }
 
 @Composable
-private fun DPadArrowButton(
+private fun SharpDpadSegment(
     onClick: () -> Unit,
+    shape: Shape,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable BoxScope.() -> Unit
 ) {
     var isPressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (isPressed) 0.86f else 1f, label = "arrow_scale")
+    val scale by animateFloatAsState(if (isPressed) 0.95f else 1f, label = "segment_press")
 
     Box(
         modifier = modifier
-            .size(44.dp)
             .scale(scale)
+            .shadow(5.dp, shape)
+            .clip(shape)
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF242938),
+                        Color(0xFF151822)
+                    )
+                )
+            )
+            .border(1.2.dp, Color(0xFF2E364A), shape)
             .pointerInput(Unit) {
                 detectTapGestures(
                     onPress = {
@@ -178,8 +270,7 @@ private fun DPadArrowButton(
                     onTap = { onClick() }
                 )
             },
-        contentAlignment = Alignment.Center
-    ) {
-        content()
-    }
+        contentAlignment = Alignment.Center,
+        content = content
+    )
 }

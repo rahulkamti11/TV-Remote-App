@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,7 +26,6 @@ import com.dishtv.remote.ui.theme.*
 @Composable
 fun MoreControlsScreen(
     irManager: IrManager,
-    onBackToMain: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -38,68 +35,11 @@ fun MoreControlsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // 1. Top Header with Back Arrow, Title, and DishTV Branding
+        // 1. 4x5 Function Grid
         Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(
-                    onClick = onBackToMain,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .size(36.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back to Main",
-                        tint = TextPrimary
-                    )
-                }
-
-                Text(
-                    text = "More Controls",
-                    style = Typography.titleLarge,
-                    fontSize = 18.sp
-                )
-            }
-
-            // DishTV Branding Subtitle
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 2.dp)
-            ) {
-                Text(
-                    text = "dish",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Black,
-                    fontStyle = FontStyle.Italic
-                )
-                Text(
-                    text = "tv",
-                    color = DishOrange,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Black,
-                    fontStyle = FontStyle.Italic
-                )
-            }
-            Text(
-                text = "DishNXT HD",
-                color = TextSecondary,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-
-        // 2. 4x5 Function Grid
-        Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             // Row 1: Source, TV/Radio, Guide, LANG
@@ -258,7 +198,7 @@ fun MoreControlsScreen(
             }
         }
 
-        // 3. Bottom IR Positioning Hint Card
+        // 2. Bottom IR Positioning Hint Card
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -277,7 +217,7 @@ fun MoreControlsScreen(
             )
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = "Point your phone's IR blaster towards your DishTV set-top box (DishNXT HD).",
+                text = "Point your phone's IR blaster towards your set-top box.",
                 color = TextSecondary,
                 fontSize = 11.sp,
                 lineHeight = 15.sp

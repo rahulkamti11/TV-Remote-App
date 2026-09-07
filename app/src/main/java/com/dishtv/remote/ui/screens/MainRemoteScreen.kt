@@ -3,7 +3,6 @@ package com.dishtv.remote.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material.icons.filled.VolumeOff
@@ -33,31 +32,15 @@ fun MainRemoteScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // 1. Power & Mute Row
+        // 1. Top Row: MUTE (Left), POWER (Center), BACK (Right)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 4.dp),
+                .padding(horizontal = 12.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Power Button (Red)
-            CircularTactileButton(
-                onClick = { irManager.transmit("POWER", DishTvCodes.POWER) },
-                size = 54.dp,
-                backgroundColor = Color(0xFFDC2626),
-                borderColor = Color(0xFFEF4444),
-                label = "Power"
-            ) {
-                Icon(
-                    imageVector = Icons.Default.PowerSettingsNew,
-                    contentDescription = "Power",
-                    tint = Color.White,
-                    modifier = Modifier.size(26.dp)
-                )
-            }
-
-            // Mute Button (Dark)
+            // Mute Button (Left)
             CircularTactileButton(
                 onClick = { irManager.transmit("MUTE", DishTvCodes.MUTE) },
                 size = 54.dp,
@@ -70,9 +53,39 @@ fun MainRemoteScreen(
                     modifier = Modifier.size(24.dp)
                 )
             }
+
+            // Power Button (Center)
+            CircularTactileButton(
+                onClick = { irManager.transmit("POWER", DishTvCodes.POWER) },
+                size = 62.dp,
+                backgroundColor = Color(0xFFDC2626),
+                borderColor = Color(0xFFEF4444),
+                label = "Power"
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PowerSettingsNew,
+                    contentDescription = "Power",
+                    tint = Color.White,
+                    modifier = Modifier.size(30.dp)
+                )
+            }
+
+            // Back Button (Right)
+            CircularTactileButton(
+                onClick = { irManager.transmit("BACK", DishTvCodes.BACK) },
+                size = 54.dp,
+                label = "Back"
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Undo,
+                    contentDescription = "Back",
+                    tint = TextPrimary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
 
-        // 2. Middle Controls: VOL Rocker + D-Pad + CH Rocker
+        // 2. Middle Controls: VOL Rocker (Left) + Sharp D-Pad (Center) + CH Rocker (Right)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -87,14 +100,14 @@ fun MainRemoteScreen(
                 onMinus = { irManager.transmit("VOL -", DishTvCodes.VOL_DOWN) }
             )
 
-            // Center Circular D-PAD
+            // Sharp Edgy Geometric D-PAD (No outer border, floating trapezoids)
             DPadControl(
                 onUp = { irManager.transmit("UP", DishTvCodes.UP) },
                 onDown = { irManager.transmit("DOWN", DishTvCodes.DOWN) },
                 onLeft = { irManager.transmit("LEFT", DishTvCodes.LEFT) },
                 onRight = { irManager.transmit("RIGHT", DishTvCodes.RIGHT) },
                 onOk = { irManager.transmit("OK", DishTvCodes.OK) },
-                size = 180.dp
+                size = 176.dp
             )
 
             // Channel Rocker
@@ -105,44 +118,7 @@ fun MainRemoteScreen(
             )
         }
 
-        // 3. Back & Home Buttons Row
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 2.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Back Button
-            CircularTactileButton(
-                onClick = { irManager.transmit("BACK", DishTvCodes.BACK) },
-                size = 48.dp,
-                label = "Back"
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Undo,
-                    contentDescription = "Back",
-                    tint = TextPrimary,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-
-            // Home Button
-            CircularTactileButton(
-                onClick = { irManager.transmit("HOME", DishTvCodes.HOME) },
-                size = 48.dp,
-                label = "Home"
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "Home",
-                    tint = TextPrimary,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-        }
-
-        // 4. Number Pad (3x4 pill layout)
+        // 3. Number Pad (3x4 pill layout)
         Column(
             modifier = Modifier
                 .fillMaxWidth()

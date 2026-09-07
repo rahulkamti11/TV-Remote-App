@@ -5,9 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -19,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dishtv.remote.ir.IrManager
@@ -63,19 +60,18 @@ fun RemotePagerScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Top Bar (shown on Screen 1)
-            if (pagerState.currentPage == 0) {
-                TopBar(
-                    isTransmitting = isTransmitting,
-                    onMenuClick = {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(1)
-                        }
+            // Top Bar: Configured per screen
+            TopBar(
+                isTransmitting = isTransmitting,
+                title = if (pagerState.currentPage == 1) "More Controls" else null,
+                isSecondScreen = pagerState.currentPage == 1,
+                onSwipeArrowClick = {
+                    coroutineScope.launch {
+                        val targetPage = if (pagerState.currentPage == 0) 1 else 0
+                        pagerState.animateScrollToPage(targetPage)
                     }
-                )
-            } else {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+                }
+            )
 
             // Horizontal Swipeable Pager
             HorizontalPager(
@@ -86,18 +82,11 @@ fun RemotePagerScreen(
             ) { page ->
                 when (page) {
                     0 -> MainRemoteScreen(irManager = irManager)
-                    1 -> MoreControlsScreen(
-                        irManager = irManager,
-                        onBackToMain = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(0)
-                            }
-                        }
-                    )
+                    1 -> MoreControlsScreen(irManager = irManager)
                 }
             }
 
-            // Bottom Paging Indicator Dots & Gesture Bar
+            // Bottom Paging Indicator Dots & Home Bar
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -131,7 +120,7 @@ fun RemotePagerScreen(
                     }
                 }
 
-                // Gesture navigation pill indicator
+                // Gesture navigation bar
                 Box(
                     modifier = Modifier
                         .width(110.dp)
@@ -142,7 +131,7 @@ fun RemotePagerScreen(
             }
         }
 
-        // Animated Toast Banner for Transmitted Key Feedback
+        // Active Command Feedback Toast
         AnimatedVisibility(
             visible = showToast && lastKey.isNotEmpty(),
             enter = fadeIn(),

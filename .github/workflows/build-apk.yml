@@ -27,14 +27,21 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug --stacktrace --no-daemon
+        run: ./gradlew assembleDebug --stacktrace --no-daemon --rerun-tasks
 
-      - name: Locate APK artifacts
+      - name: Verify APK was produced
         run: |
           echo "=== Searching for .apk files ==="
+          APK_COUNT=$(find "$GITHUB_WORKSPACE" -name "*.apk" -type f 2>/dev/null | wc -l)
           find "$GITHUB_WORKSPACE" -name "*.apk" -type f 2>/dev/null \
-            | while read f; do echo "  FOUND: $f"; done
-          echo "=== Done ==="
+            | while read f; do echo "  FOUND: $f ($(du -h "$f" | cut -f1))"; done
+          echo "=== Total APKs found: $APK_COUNT ==="
+          if [ "$APK_COUNT" -eq 0 ]; then
+            echo "ERROR: assembleDebug completed but no .apk file was produced!"
+            echo "Listing app/build/ directory tree for diagnosis:"
+            find "$GITHUB_WORKSPACE/app/build" -type f 2>/dev/null | head -50 || echo "(app/build does not exist)"
+            exit 1
+          fi
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4

@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -19,88 +20,71 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dishtv.remote.ui.theme.*
 
-// Custom Shapes for the 4 Sharp Trapezoid D-Pad Segments
-class UpTrapezoidShape(private val cornerRadius: Float = 16f) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val path = Path().apply {
-            moveTo(cornerRadius, 0f)
-            lineTo(size.width - cornerRadius, 0f)
-            quadraticBezierTo(size.width, 0f, size.width - 4f, 8f)
-            lineTo(size.width * 0.76f, size.height - 4f)
-            quadraticBezierTo(size.width * 0.73f, size.height, size.width * 0.68f, size.height)
-            lineTo(size.width * 0.32f, size.height)
-            quadraticBezierTo(size.width * 0.27f, size.height, size.width * 0.24f, size.height - 4f)
-            lineTo(4f, 8f)
-            quadraticBezierTo(0f, 0f, cornerRadius, 0f)
-            close()
-        }
-        return Outline.Generic(path)
-    }
+// 4 Sharp Trapezoid Shapes using standard Compose GenericShape
+val UpTrapezoidShape = GenericShape { size, _ ->
+    val cornerRadius = 14f
+    moveTo(cornerRadius, 0f)
+    lineTo(size.width - cornerRadius, 0f)
+    quadraticBezierTo(size.width, 0f, size.width - 4f, 8f)
+    lineTo(size.width * 0.76f, size.height - 4f)
+    quadraticBezierTo(size.width * 0.73f, size.height, size.width * 0.68f, size.height)
+    lineTo(size.width * 0.32f, size.height)
+    quadraticBezierTo(size.width * 0.27f, size.height, size.width * 0.24f, size.height - 4f)
+    lineTo(4f, 8f)
+    quadraticBezierTo(0f, 0f, cornerRadius, 0f)
+    close()
 }
 
-class DownTrapezoidShape(private val cornerRadius: Float = 16f) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val path = Path().apply {
-            moveTo(size.width * 0.32f, 0f)
-            lineTo(size.width * 0.68f, 0f)
-            quadraticBezierTo(size.width * 0.73f, 0f, size.width * 0.76f, 4f)
-            lineTo(size.width - 4f, size.height - 8f)
-            quadraticBezierTo(size.width, size.height, size.width - cornerRadius, size.height)
-            lineTo(cornerRadius, size.height)
-            quadraticBezierTo(0f, size.height, 4f, size.height - 8f)
-            lineTo(size.width * 0.24f, 4f)
-            quadraticBezierTo(size.width * 0.27f, 0f, size.width * 0.32f, 0f)
-            close()
-        }
-        return Outline.Generic(path)
-    }
+val DownTrapezoidShape = GenericShape { size, _ ->
+    val cornerRadius = 14f
+    moveTo(size.width * 0.32f, 0f)
+    lineTo(size.width * 0.68f, 0f)
+    quadraticBezierTo(size.width * 0.73f, 0f, size.width * 0.76f, 4f)
+    lineTo(size.width - 4f, size.height - 8f)
+    quadraticBezierTo(size.width, size.height, size.width - cornerRadius, size.height)
+    lineTo(cornerRadius, size.height)
+    quadraticBezierTo(0f, size.height, 4f, size.height - 8f)
+    lineTo(size.width * 0.24f, 4f)
+    quadraticBezierTo(size.width * 0.27f, 0f, size.width * 0.32f, 0f)
+    close()
 }
 
-class LeftTrapezoidShape(private val cornerRadius: Float = 16f) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val path = Path().apply {
-            moveTo(0f, cornerRadius)
-            lineTo(0f, size.height - cornerRadius)
-            quadraticBezierTo(0f, size.height, 8f, size.height - 4f)
-            lineTo(size.width - 4f, size.height * 0.76f)
-            quadraticBezierTo(size.width, size.height * 0.73f, size.width, size.height * 0.68f)
-            lineTo(size.width, size.height * 0.32f)
-            quadraticBezierTo(size.width, size.height * 0.27f, size.width - 4f, size.height * 0.24f)
-            lineTo(8f, 4f)
-            quadraticBezierTo(0f, 0f, 0f, cornerRadius)
-            close()
-        }
-        return Outline.Generic(path)
-    }
+val LeftTrapezoidShape = GenericShape { size, _ ->
+    val cornerRadius = 14f
+    moveTo(0f, cornerRadius)
+    lineTo(0f, size.height - cornerRadius)
+    quadraticBezierTo(0f, size.height, 8f, size.height - 4f)
+    lineTo(size.width - 4f, size.height * 0.76f)
+    quadraticBezierTo(size.width, size.height * 0.73f, size.width, size.height * 0.68f)
+    lineTo(size.width, size.height * 0.32f)
+    quadraticBezierTo(size.width, size.height * 0.27f, size.width - 4f, size.height * 0.24f)
+    lineTo(8f, 4f)
+    quadraticBezierTo(0f, 0f, 0f, cornerRadius)
+    close()
 }
 
-class RightTrapezoidShape(private val cornerRadius: Float = 16f) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val path = Path().apply {
-            moveTo(0f, size.height * 0.32f)
-            lineTo(0f, size.height * 0.68f)
-            quadraticBezierTo(0f, size.height * 0.73f, 4f, size.height * 0.76f)
-            lineTo(size.width - 8f, size.height - 4f)
-            quadraticBezierTo(size.width, size.height, size.width, size.height - cornerRadius)
-            lineTo(size.width, cornerRadius)
-            quadraticBezierTo(size.width, 0f, size.width - 8f, 4f)
-            lineTo(4f, size.height * 0.24f)
-            quadraticBezierTo(0f, size.height * 0.27f, 0f, size.height * 0.32f)
-            close()
-        }
-        return Outline.Generic(path)
-    }
+val RightTrapezoidShape = GenericShape { size, _ ->
+    val cornerRadius = 14f
+    moveTo(0f, size.height * 0.32f)
+    lineTo(0f, size.height * 0.68f)
+    quadraticBezierTo(0f, size.height * 0.73f, 4f, size.height * 0.76f)
+    lineTo(size.width - 8f, size.height - 4f)
+    quadraticBezierTo(size.width, size.height, size.width, size.height - cornerRadius)
+    lineTo(size.width, cornerRadius)
+    quadraticBezierTo(size.width, 0f, size.width - 8f, 4f)
+    lineTo(4f, size.height * 0.24f)
+    quadraticBezierTo(0f, size.height * 0.27f, 0f, size.height * 0.32f)
+    close()
 }
 
 @Composable
@@ -111,7 +95,7 @@ fun DPadControl(
     onRight: () -> Unit,
     onOk: () -> Unit,
     modifier: Modifier = Modifier,
-    size: Dp = 180.dp
+    size: Dp = 176.dp
 ) {
     Box(
         modifier = modifier.size(size),
@@ -120,7 +104,7 @@ fun DPadControl(
         // UP BUTTON (Top Trapezoid)
         SharpDpadSegment(
             onClick = onUp,
-            shape = UpTrapezoidShape(),
+            shape = UpTrapezoidShape,
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth(0.92f)
@@ -139,7 +123,7 @@ fun DPadControl(
         // DOWN BUTTON (Bottom Trapezoid)
         SharpDpadSegment(
             onClick = onDown,
-            shape = DownTrapezoidShape(),
+            shape = DownTrapezoidShape,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth(0.92f)
@@ -158,7 +142,7 @@ fun DPadControl(
         // LEFT BUTTON (Left Trapezoid)
         SharpDpadSegment(
             onClick = onLeft,
-            shape = LeftTrapezoidShape(),
+            shape = LeftTrapezoidShape,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .fillMaxHeight(0.92f)
@@ -177,7 +161,7 @@ fun DPadControl(
         // RIGHT BUTTON (Right Trapezoid)
         SharpDpadSegment(
             onClick = onRight,
-            shape = RightTrapezoidShape(),
+            shape = RightTrapezoidShape,
             modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight(0.92f)
@@ -193,7 +177,7 @@ fun DPadControl(
             )
         }
 
-        // CENTER OK BUTTON (Rounded-Square with 10px spacing)
+        // CENTER OK BUTTON (Rounded Square with clean 10px spacing)
         var isOkPressed by remember { mutableStateOf(false) }
         val okScale by animateFloatAsState(if (isOkPressed) 0.92f else 1f, label = "ok_press")
         val okShape = RoundedCornerShape(14.dp)

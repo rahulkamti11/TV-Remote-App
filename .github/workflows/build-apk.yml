@@ -23,8 +23,13 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Prepare Gradle Wrapper
+        run: |
+          sed -i 's/\r$//' gradlew
+          chmod +x gradlew
+
+      - name: Verify Gradle
+        run: ./gradlew --version
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace --no-daemon --rerun-tasks
@@ -47,6 +52,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: DishTvRemote-Debug-APK
-          path: app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/debug/*.apk"
           if-no-files-found: error
           retention-days: 30

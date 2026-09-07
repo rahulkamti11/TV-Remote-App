@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Dish TV Remote</string>
+    <string name="dish_nxt_hd">DishNXT HD</string>
+    <string name="connected">Connected</string>
+    <string name="power">Power</string>
+    <string name="mute">Mute</string>
+    <string name="vol">VOL</string>
+    <string name="ch">CH</string>
+    <string name="ok">OK</string>
+    <string name="back">Back</string>
+    <string name="home">Home</string>
+    <string name="more_controls">More Controls</string>
+    <string name="ir_hint">Point your phone\'s IR blaster towards your DishTV set-top box (DishNXT HD).</string>
+    <string name="no_ir_warning">No IR Blaster detected on this device. UI simulation is enabled.</string>
+</resources>
